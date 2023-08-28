@@ -40,9 +40,10 @@
                 <i class="fas fa-bell fa-fw"></i>
                 <span class="badge badge-danger badge-counter" id="notificationBadge"></span>
             </a>
-            <div class="dropdown-list dropdown-menu notifications-dropdown dropdown-menu-right shadow animated--grow-in"
+            <div class="p-3 dropdown-list dropdown-menu notifications-dropdown dropdown-menu-right shadow animated--grow-in"
                 aria-labelledby="alertsDropdown" id="notificationDropdown">
                 <!-- Dropdown content will be populated dynamically -->
+                
             </div>
         </li>
 
@@ -66,7 +67,7 @@
                     <%= link_to admin_user_path(current_user), class: "dropdown-item" do %>
                         <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                         profile
-                      <% end %>
+                    <% end %>
                         
                     <%= link_to edit_user_registration_path, class: "dropdown-item" do %>
                         <i class="fas fa-pen fa-sm fa-fw mr-2 text-gray-400"></i>

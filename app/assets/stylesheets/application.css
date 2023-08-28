@@ -61,3 +61,15 @@ strong{
   .error-message{
     color: red;
   }
+
+  /* Add this CSS in your stylesheet */
+.notification-item-container {
+  display: flex;
+  align-items: center;
+}
+
+.icon-image {
+  width: 30px; /* Adjust the width as needed */
+  height: auto; /* Automatically adjust the height based on the width */
+  margin-right: 10px; /* Add some spacing between the icon and text */
+}

@@ -57,7 +57,7 @@
                         <td><%= request.account.gl %></td>
                         <td><%= request.account.name %></td>
                         <td><%= request.trx_code %></td>
-                        <td><%= request.amount %></td>
+                        <td><%= number_to_currency(request.amount, unit: "", precision: 2, delimiter: ",") %></td>
                         
                       </tr>
                       
@@ -68,7 +68,7 @@
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td><%= sum %></td>
+                        <td><%= number_to_currency(sum, unit: "", precision: 2, delimiter: ",")   %></td>
                         
                       </tr>
                      

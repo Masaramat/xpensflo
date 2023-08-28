@@ -51,7 +51,7 @@ class RequestsController < ApplicationController
     service = RequestsService.new(@request, current_user)
 
     if service.create_request
-      create_notifications(@request)
+      NotificationService.create_notifications(@request)
       redirect_to request_url(service.request), notice: "Request was successfully created."
     else
       @accounts = Account.all
@@ -136,7 +136,7 @@ class RequestsController < ApplicationController
 
     if @request.save
       redirect_to requests_url, notice: "Request was successfully updated."
-      create_notifications(@request)      
+      NotificationService.create_notifications(@request)      
       
     else
       render :edit, status: :unprocessable_entity
@@ -144,79 +144,7 @@ class RequestsController < ApplicationController
   end
   private 
 
-  def create_notifications(request)
-    puts "PROCESSING _______________"
-    notifications = []
-    case request.status
-    when "paid"
-      next_approver = request.paid_by
-      notifications.push(Notification.create(
-        user: request.requested_by,
-        request: request,
-        message: "Your request has been approved to be paid by #{request.paid_by.name}" 
-      ))
-      notifications.push(Notification.create(
-        user: request.paid_by,
-        request: request,
-        message: "A new request by #{request.requested_by.name} has been approved for you to pay"
-      ))
-    when "pending"
-      next_approvers = []
-      if request.requested_by.branch.name.casecmp("Head office") == 0        
-        next_approver = User.where(role: "md")
-        next_approver.each do |approver|
-          next_approvers << approver
-        end
-      else
-        next_approver = User.where(role: 'operation', branch: request.requested_by.branch)
-        next_approvers << next_approver
-      end     
-      
-      next_approvers.each do |approver|
-        notifications.push(Notification.create(
-          user: approver,
-          request: request,
-          message: "A new request by #{request.requested_by.name} has been forwarded for your approval"
-        ))
-        p "Notification sent"
-      end
-    when "vetted"
-      if request.amount < 50000          
-        next_approver = User.find_by(role: 'bm', branch: request.requested_by.branch)
-      else
-        next_approver = User.find_by(role: "md")
-      end
-      notifications.push(Notification.create(
-        user: next_approver,
-        request: request,
-        message: "A new request by #{request.requested_by.name} has been forwarded for your approval"
-      ))
-    when "approved"
-      next_approvers = User.where(role: 'auditor', branch: request.requested_by.branch)  
-
-      next_approvers.each do |approver|
-        notifications.push(Notification.create(
-          user: approver,
-          request: request,
-          message: "A new request by #{request.requested_by.name} has been forwarded for your approval"
-        ))
-      end
-    when "cleared"
-      next_approver = User.find_by(role: 'operation', branch: request.requested_by.branch)
-      notifications.push(Notification.create(
-        user: next_approver,
-        request: request,
-        message: "A new request by #{request.requested_by.name} has been cleared for payment"
-      ))
-
-    else
-
-    end
-    notifications.each do |notification|
-      user = notification.user
-      NotificationChannel.broadcast_to(user, { notifications: user.notifications, count: user.notifications.count, notification: notification })
-    end
-  end   
+    
 
   def update_request_status_for_operations(user)
     
