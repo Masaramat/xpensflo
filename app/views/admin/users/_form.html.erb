@@ -1,0 +1,74 @@
+<%= form_for([:admin, @user]) do |f| %>
+  <div class="row">
+    <div class="field form-group col-lg-6">
+      <%= f.label :email %>
+      <%= f.text_field :email, class: "form-control" %>
+      <div class="error-message">
+        <%= @user.errors[:email].first %>
+      </div>
+    </div>
+
+    <div class="field form-group col-lg-6">
+      <%= f.label :name %>
+      <%= f.text_field :name, class: "form-control" %>
+      <div class="error-message">
+        <%= @user.errors[:name].first %>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="field form-group col-lg-6">
+      <%= f.label :department_id %>
+      <%= f.collection_select :department_id, @departments, :id, :name, {}, class: "form-control form-select" %>
+      <div class="error-message">
+        <%= @user.errors[:department_id].first %>
+      </div>
+    </div>
+
+    <div class="field form-group col-lg-6">
+      <%= f.label :branch_id %>
+      <%= f.collection_select :branch_id, @branches, :id, :name, {}, class: "form-control form-select" %>
+      <div class="error-message">
+        <%= @user.errors[:branch_id].first %>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="field form-group col-lg-6">
+      <%= f.label :role %>
+      <%= f.select :role, User.roles.keys.map { |role| [role.titleize, role] }, {}, class: "form-control form-select" %><br>
+      <div class="error-message">
+        <%= @user.errors[:role].first %>
+      </div>
+    </div>
+
+  </div>
+  
+
+  <div class="row">
+    
+
+    <div class="field form-group col-lg-6">
+      <%= f.label :password %>
+      <% if @minimum_password_length %>
+        <em>(<%= @minimum_password_length %> characters minimum)</em>
+      <% end %><br />
+      <%= f.password_field :password, autocomplete: "new-password", class:"form-control" %>
+      <div class="error-message">
+        <%= @user.errors[:password].first %>
+      </div>
+    </div>
+    <div class="field form-group col-lg-6">
+      <%= f.label :password_confirmation %><br />
+      <%= f.password_field :password_confirmation, autocomplete: "new-password", class:"form-control" %>
+      <div class="error-message">
+        <%= @user.errors[:password_confirmation].first %>
+      </div>
+    </div>
+  </div>
+
+ 
+
+  <%= f.submit class: "btn btn-dark" %>
+<% end %>

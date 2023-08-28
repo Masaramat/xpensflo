@@ -1,0 +1,23 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  amount: 9.99
+  account: one
+  comment: MyText
+  narration: MyText
+  requested_by: one
+  vetted_by: one
+  approved_by: one
+  cleared_by: one
+  paid_by: one
+
+two:
+  amount: 9.99
+  account: two
+  comment: MyText
+  narration: MyText
+  requested_by: two
+  vetted_by: two
+  approved_by: two
+  cleared_by: two
+  paid_by: two

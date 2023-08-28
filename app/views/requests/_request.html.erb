@@ -1,0 +1,263 @@
+<div id="<%= dom_id request %>" class="container">
+  
+  <div class="row">
+    <div class="col-lg-6">
+      <p>
+        <strong>Amount:</strong>
+        <span style="font-weight: 600;"><%= request.amount %></span> 
+      </p>
+      
+    </div>
+    <div class="col-lg-6">
+        <p>
+        <strong>Payment by:</strong>
+        <span style="font-weight: 600;"><%= request.payment_type %></span> 
+        
+      </p>
+    </div>
+
+  </div>
+
+  <div class="row">
+    <div class="col-lg-6">
+      <p>
+        <strong>Branch:</strong>
+        <span style="font-weight: 600;"><%= Branch.find(request.requested_by.branch_id).name  %></span> 
+        
+      </p>
+      
+    </div>
+    <div class="col-lg-6">
+        <p>
+          <strong>Request status:</strong>
+          <span style="font-weight: 600;"><%= request.status %></span> 
+          
+        </p>
+    </div>
+
+  </div>
+
+  <div class="row">
+    <div class="col-lg-6">
+      <p>
+        <strong>Expense type:</strong>
+        <span style="font-weight: 600;"><%= request.expense_type %></span>
+        
+      </p>
+      
+    </div>
+    <div class="col-lg-6">
+        <p>
+        <strong>Account:</strong>
+        <%= "#{request.account.gl}- #{request.account.name}" %>
+        <span style="font-weight: 600;"><%= request.expense_type %></span>
+      </p>
+    </div>
+
+  </div>
+  
+  <%  if request.requested_by != nil %>
+  <div class="row">
+    <div class="col-lg-6">
+      <p>
+        <strong>Requested by:</strong>
+        <span style="font-weight: 600;"><%= request.requested_by.name %></span>
+        
+      </p>
+      
+    </div>
+    <div class="col-lg-6">
+        <p>
+          <strong>Request Date:</strong>
+          <span style="font-weight: 600;"><%= request.created_at.strftime('%d-%m-%Y') %></span>
+          
+        </p>
+    </div>
+
+  </div>
+  <% end %>
+
+  
+
+  <%  if request.vetted_by != nil %>
+    <div class="row">
+      <div class="col-lg-6">
+        <p>
+          <strong>Vetted by:</strong>
+          <span style="font-weight: 600;"><%= request.vetted_by.name %></span>
+          
+        </p>
+        
+      </div>
+      <div class="col-lg-6">
+        <p>
+            <strong>Vetted date:</strong>
+            <span style="font-weight: 600;"><%= request.vetted_at.strftime('%d-%m-%Y') %></span>
+            
+          </p>
+      </div>
+
+    </div>
+
+  <% end %>
+
+  <%  if request.approved_by != nil %>
+    <div class="row">
+      <div class="col-lg-6">
+        <p>
+          <strong>Approved by:</strong>
+          <span style="font-weight: 600;"><%= request.approved_by.name %></span>
+          
+        </p>
+        
+      </div>
+      <div class="col-lg-6">
+        <p>
+            <strong>Approval date:</strong>
+            <span style="font-weight: 600;"><%= request.approved_at.strftime('%d-%m-%Y') %></span>
+            
+          </p>
+      </div>
+
+    </div>
+
+  <% end %>
+
+  <%  if request.cleared_by != nil %>
+    <div class="row">
+      <div class="col-lg-6">
+        <p>
+          <strong>Cleared by:</strong>
+          <span style="font-weight: 600;"><%= request.cleared_by.name %></span>
+          
+        </p>
+        
+      </div>
+      <div class="col-lg-6">
+        <p>
+            <strong>Cleared date:</strong>
+            <span style="font-weight: 600;"><%= request.cleared_at.strftime('%d-%m-%Y') %></span>
+            
+          </p>
+      </div>
+
+    </div>
+
+  <% end %>
+
+  <%  if request.paid_by_id != nil %>
+    <div class="row">
+      <div class="col-lg-6">
+        <p>
+          <strong>Paid by:</strong>
+          <span style="font-weight: 600;"><%= request.paid_by.name %></span>
+          
+        </p>
+        
+      </div>
+      <div class="col-lg-6">
+        <p>
+            <strong>Paid date:</strong>
+            <span style="font-weight: 600;"><%= request.cleared_at.strftime('%d-%m-%Y') %></span>
+            
+          </p>
+      </div>
+
+    </div>
+
+  <% end %>
+
+
+
+    <div class="row">
+    <div class="col-lg-6">
+      <p>
+        <strong>Comment:</strong>
+        <span style="font-weight: 600;"><%= request.comment %></span>
+        
+      </p>
+      
+    </div>
+    <div class="col-lg-6">
+        <p>
+          <strong>Narration:</strong>
+          <span style="font-weight: 600;"><%= request.narration %></span>
+          
+        </p>
+    </div>
+
+  </div>
+
+
+  <% case current_user.role %>
+        <% when 'operation', 'head_admin' %>
+          <%if @request.status == 'pending'%>
+            <%= link_to 'Vet Request', vet_request_request_path(@request), class: "btn btn-dark" %>
+          <% else %>
+            <%if current_user.role == 'operation' and @request.status == 'cleared'%>  
+              <% if @request.payment_type == 'cash' %>
+                <%= form_with(model: @request, url: pay_request_request_path(@request), method: :post) do |form| %>
+                  <div class="field form-group">
+                    <%= form.label :paid_by_id %>
+                    <%= form.collection_select :paid_by_id, User.where(role: 'cashier', branch: current_user.branch), :id, :name, { prompt: 'Select a cashier' }, { class: "form-control form-select" } %>
+
+                  </div>
+                  <%= form.submit 'Pay Request', class: "btn btn-dark" %>
+                <% end %>
+              <% end %>
+              <% if @request.payment_type == 'transfer' %>
+                <div class="col-lg-6">
+                    <%= form_with(model: @request, url: pay_request_request_path(@request), method: :post) do |form| %>
+                      <div class="field form-group">
+                        <%= form.label :paid_by_id %>
+                        <%= form.collection_select :paid_by_id, User.where(role: 'ft', branch: current_user.branch), :id, :name, { prompt: 'Select an FT' }, { class: "form-control form-select" } %>
+
+                      </div>
+                      <%= form.submit 'Pay Request', class: "btn btn-dark mt-3" %>
+                    <% end %>
+                </div>
+                
+              <% end %>
+            <% end %>
+
+          <% end %>  
+
+          <% when 'cashier', 'ft' %>          
+           
+            <%= form_with(model: @request, url: finish_request_request_path(@request), method: :post) do |form| %>
+              <div class="field form-group col-lg-6 mb-2">
+                <%= form.label :trx_code %>
+                <%= form.text_field :trx_code,  class: "form-control" %>
+
+              </div>
+              <%= form.submit 'Finish Request', class: "btn btn-dark" %>
+              <%= link_to "Back to requests", requests_path, class: "btn btn-danger" %>
+            <% end %>
+             
+          
+        <% when 'bm', 'md' %>
+          <%= link_to 'Approve Request', approve_request_request_path(@request), class: "btn btn-dark" %>
+        <% when 'auditor' %>
+          <%= link_to 'Clear Request', clear_request_request_path(@request), class: "btn btn-dark" %>
+        <% else %>
+              <div class="row">
+                
+                <% if request.requested_by == current_user and request.status == "pending" %>
+                  <div class="col-md-2">
+                    <%= link_to "Edit request", edit_request_path, class: "btn btn-dark" %>
+                  
+                  </div>
+                  <div class="col-md-3">
+                    <%= button_to "Delete this request", request_path(@request), method: :delete, class:"btn btn-danger" %> 
+                  </div> 
+                <% end %>
+                
+              
+              </div>
+         
+            
+        <% end %> 
+
+        
+
+</div>

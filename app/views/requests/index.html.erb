@@ -1,0 +1,128 @@
+<!-- Page Wrapper -->
+<div id="wrapper">
+    <%= render "home/sidebar" %>
+    
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+
+        <!-- Main Content -->
+        <div id="content">
+
+            <%= render "home/topbar" %>
+
+            <!-- Begin Page Content -->
+            <div class="container-fluid">
+                <div class="card border-warning">
+                <!-- Page Heading -->
+                <div class="card-header bg-dark text-light d-sm-flex align-items-center justify-content-between">
+                    <h3>Pending Requests</h3>
+                    <%= link_to new_request_path, class: "d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" do %>
+                        <i class="fas fa-user-plus fa-sm text-white-50"></i> Create new request
+                    <% end %>
+                </div>
+
+                <div class="card-body">
+                      <% if notice %>
+                        <p style="color: green"><%= notice %></p>
+                      <% end %>
+                  <table class="table table-striped " id = "user_table">
+                  
+                    <thead class="bg-def text-light">
+                    <div id="example_wrapper" class="row">
+                          <div class="col-md-6">
+                              <div class="dataTables_filter">
+                                  <!-- Add the search input here -->
+                              </div>
+                              <div class="dataTables_buttons">
+                                  <!-- Buttons will be appended here -->
+                              </div>
+                          </div>
+                          <!-- Other content here -->
+                      </div>
+                      <tr>
+                        <th>SN</th>
+                        <th>Amount</th>
+                        <th>Payment type</th>
+                        <th>Expense type</th>
+                        <th>
+                          <% case current_user.role %>
+                          <% when 'operation', 'head_admin' %>
+                            Initiated By
+                          <% when 'bm', 'md' %>
+                            Vetted By
+                          <% when 'auditor' %>
+                            Approved
+                                      
+                          <% else %>
+                            Paid By
+                          <% end %>
+                        </th>
+                        <th>Status</th>
+                        <th>Option</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% 
+                        sn = 0
+                        @requests.each do |request| 
+
+                        
+                        %>
+                      <tr id="<%= dom_id request %>">
+                        <td><%= sn += 1 %></td>
+                        <td><%= request.amount %></td>
+            
+                        <td><%= request.payment_type %></td>
+            
+                        <td><%= request.expense_type %></td>
+            
+                        <td> 
+                          <% case current_user.role %>
+                          <% when 'operation', 'head_admin' %>
+                            <%= request.requested_by.name %>
+                          <% when 'bm', 'md' %>
+                            <%= request.vetted_by.name %>
+                          <% when 'auditor' %>
+                            <%= request.approved_by.name %>
+                                      
+                          <% else %>
+                            <%= request.paid_by&.name %>
+                          <% end %>
+                          
+                          </td>
+                        
+                        <td><%= request.status %></td>
+                        <td><%= link_to "Show", request, class: "btn btn-sm btn-primary" %></td>
+                      </tr>
+                      <% end %>
+                    </tbody>
+                  </table>                 
+                  
+                </div>
+              
+              </div>                    
+                    
+                   
+               
+
+            </div>
+            <!-- /.container-fluid -->
+
+        </div>
+        <!-- End of Main Content -->
+
+        <%= render "home/footer" %>
+
+    </div>
+    <!-- End of Content Wrapper -->
+
+</div>
+<!-- End of Page Wrapper -->
+
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+
+
+

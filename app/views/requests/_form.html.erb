@@ -1,0 +1,80 @@
+  
+    
+      <%= form_for(@request) do |form| %>      
+
+        <div class="field form-group mb-2">
+          <%= form.label :amount, style: "display: block" %>
+          <%= form.text_field :amount, class: "form-control" %>
+          <% if @request.errors.has_key?(:amount) %>
+            <div class="error-message">
+              <%= @request.errors[:amount].first %>
+            </div>
+          <% end %>
+        </div>
+        <div class="row">
+          <div class="field form-group mb-2 col-lg-6">
+            <%= form.label :payment_type, style: "display: block" %>
+            <%= form.select :payment_type, 
+                  Request.payment_types.keys.map { |payment_type| [payment_type.capitalize, payment_type] }, 
+                  {},
+                  class: "form-control form-select"%>
+                    <% if @request.errors.has_key?(:payment_type) %>
+                    <div class="error-message">
+                      <%= @request.errors[:payment_type].first %>
+                    </div>
+                  <% end %>
+          </div>
+
+
+          <div class="field form-group mb-2 col-lg-6">
+            <%= form.label :expense_type, style: "display: block" %>
+            <%= form.select :expense_type,
+                  Request.expense_types.keys.map { |expense_type| [expense_type.capitalize, expense_type] },
+                  {}, 
+                  class: "form-control form-select" %>
+                    <% if @request.errors.has_key?(:expense_type) %>
+                    <div class="error-message">
+                      <%= @request.errors[:expense_type].first %>
+                    </div>
+                  <% end %>
+          </div>
+          
+        </div>
+
+        
+
+        <div class="field form-group mb-2">
+          <%= form.label :account_id, style: "display: block"  %>
+          <%= form.select :account_id, accounts.each.map { |account| ["#{account.gl}-#{account.name}", account.id] }, {}, class: "form-control form-select" %><br>
+          <% if @request.errors.has_key?(:account_id) %>
+          <div class="error-message">
+            <%= @request.errors[:account_id].first %>
+          </div>
+        <% end %>
+          </div>
+
+        <div class="field form-group mb-2">
+          <%= form.label :narration, style: "display: block" %>
+          <%= form.text_area :narration, class: "form-control" %>
+          <% if @request.errors.has_key?(:narration) %>
+          <div class="error-message">
+            <%= @request.errors[:narration].first %>
+          </div>
+        <% end %>
+        </div>
+
+        <div class="field form-group mb-2">
+          <%= form.label :comment, style: "display: block" %>
+          <%= form.text_area :comment, class: "form-control" %>
+          
+        </div>
+
+        <div>
+          <%= form.submit class: "btn btn-dark" %>
+         
+        </div>
+      <% end %>
+   
+
+
+

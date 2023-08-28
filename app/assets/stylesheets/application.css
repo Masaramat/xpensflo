@@ -1,0 +1,63 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS (and SCSS, if configured) file within this directory, lib/assets/stylesheets, or any plugin's
+ * vendor/assets/stylesheets directory can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any other CSS
+ * files in this directory. Styles in this file should be added after the last require_* statement.
+ * It is generally better to create a new file per style scope.
+ *
+ *= require_tree .
+ *= require_self
+ */
+
+/* Hide the buttons and other elements when in print view */
+.dt-print-view .dataTables_buttons {
+    display: none;
+}
+
+/* Ensure the table footer is visible when printing */
+tfoot {
+    display: table-footer-group;
+}
+
+strong{
+    color: #D67B2C;
+  }
+  .bg-def{
+    background-color: #D67B2C;
+  }
+  body{
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+  }
+  .nav-link{
+    color: white;
+  }
+  /* Adjust the size of the brand logo */
+  .brand-logo img {
+    width: 150px; /* You can adjust this value */
+    height: auto; /* Maintain aspect ratio */
+  }
+
+  .border-custom{
+    border: 1px solid; 
+    border-color: #D67B2C;
+  }
+  /* Change dropdown toggle button's hover color */
+  nav-link .dropdown-toggle:hover {
+    color: #D67B2C; /* Change this color to your desired hover color */
+  }
+  
+
+  /* Change dropdown menu link's hover background color */
+  .dropdown-menu a.dropdown-item:hover {
+    background-color: #D67B2C; /* Change this color to your desired hover background color */
+    color: #fff; /* Change this color to your desired link color */
+  }
+
+  .error-message{
+    color: red;
+  }

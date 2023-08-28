@@ -1,0 +1,141 @@
+<!-- Sidebar -->
+<ul class="navbar-nav bg-gradient-dark sidebar sidebar-dark accordion" id="accordionSidebar">
+
+    <!-- Sidebar - Brand -->
+    
+    <div class="sidebar-brand-icon sidebar-brand d-flex align-items-center justify-content-center">
+        <%= link_to root_path, class: "brand-logo" do %>
+            <%= image_tag("logo.png", alt: "Logo") %>
+        <% end %>
+    </div>
+    <div class="sidebar-brand-text mx-3 text-center text-light">XpensFlo</div>
+    
+
+    <!-- Divider -->
+    <hr class="sidebar-divider my-0">
+
+    <!-- Nav Item - Dashboard -->
+    <li class="nav-item active">
+    <%= link_to root_path, class: "nav-link" do %>
+        
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+    <% end %>
+        
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider">
+
+    <!-- Heading -->
+    <div class="sidebar-heading">
+        Pages
+    </div>
+
+    <!-- Nav Item - Pages Collapse Menu -->
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
+            aria-expanded="true" aria-controls="collapseTwo">
+            <i class="fas fa-fw fa-cog"></i>
+            <span>Requests</span>
+        </a>
+        
+            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                <% if current_user.role != "admin" %>
+                    <%= link_to "Pending requests", requests_path, class: "nav-item collapse-item" %>
+                <% end %>  
+                </div>
+            </div>
+        
+    </li>
+
+    <!-- Nav Item - Utilities Collapse Menu -->
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
+            aria-expanded="true" aria-controls="collapseUtilities">
+            <i class="fas fa-fw fa-wrench"></i>
+            <span>Reports</span>
+        </a>
+        <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
+            data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <% if current_user.role == "cashier" or current_user.role == "ft" %>
+                <%= link_to "Cashier daily report", daily_report_requests_path, class: "nav-item collapse-item" %>
+
+                <% end %>
+                <%= link_to "Generate Report", general_reports_requests_path(start_date: nil, end_date: nil), class: "nav-item collapse-item" %>
+               
+            </div>
+        </div>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider">
+    <% if current_user.admin? %>
+        <!-- Heading -->
+        <div class="sidebar-heading">
+            Admin
+        </div>
+
+        <!-- Nav Item - Pages Collapse Menu -->
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
+                aria-expanded="true" aria-controls="collapsePages">
+                <i class="fas fa-fw fa-cog"></i>
+                <span>Manage</span>
+            </a>
+            <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    
+                    <%= link_to "Users", admin_users_path, class: "nav-item collapse-item" %>                   
+                     
+                    <%= link_to "branches", admin_branches_path, class: "collapse-item" %>
+                    <%= link_to "Departments", admin_departments_path, class: "collapse-item" %>
+                    <%= link_to "Accounts", admin_accounts_path, class: "collapse-item" %>
+                    
+                </div>
+            </div>
+        </li>
+       
+
+    <% end %>   
+
+   
+
+    <!-- Divider -->
+    <hr class="sidebar-divider d-none d-md-block">
+
+    <!-- Sidebar Toggler (Sidebar) -->
+    <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+    </div>
+
+   
+
+</ul>
+<!-- End of Sidebar -->
+
+
+<!-- Logout Modal-->
+<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel">Ready to Leave?</h4>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="alert alert-warning">Are you sure you want to leave?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                <%= button_to "Logout", destroy_user_session_path, method: :delete, class: "btn btn-warning" %>
+
+            </div>
+        </div>
+    </div>
+</div>

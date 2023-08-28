@@ -1,0 +1,59 @@
+
+<!-- Page Wrapper -->
+<div id="wrapper">
+    <%= render "home/sidebar" %>
+    
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+
+        <!-- Main Content -->
+        <div id="content">
+
+            <%= render "home/topbar" %>
+
+            <!-- Begin Page Content -->
+            <div class="container-fluid">
+                <div class="card border-warning">
+                <!-- Page Heading -->
+                <div class="card-header bg-dark text-light d-sm-flex align-items-center justify-content-between">
+                    <h3>Account</h3>
+                    
+                </div>
+
+                <div class="card-body">
+                      <% if notice %>
+                        <p style="color: green"><%= notice %></p>
+                      <% end %>
+                      <%= render @account %>
+
+                      <div class = "row">
+                        <div class="col-lg-3">
+                          <%= link_to "Edit this account", edit_admin_account_path(@account), class:"btn btn-dark form-control" %> 
+                        </div>
+                        <div class="col-lg-3">
+                          <%= button_to "Delete this account", admin_account_path(@account), method: :delete, class:"btn btn-danger form-control" %>
+
+                        </div> 
+                      </div>
+                                    
+                  
+                </div>
+              
+              </div>                    
+                    
+                   
+               
+
+            </div>
+            <!-- /.container-fluid -->
+
+        </div>
+        <!-- End of Main Content -->
+        <%= render "home/footer" %>
+
+    </div>
+    <!-- End of Content Wrapper -->
+
+</div>
+<!-- End of Page Wrapper -->
+
