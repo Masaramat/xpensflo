@@ -52,5 +52,5 @@ test:
 production:
   <<: *default
   database: lightmfb_requests_prod
-  username: lightmfb_requests_api
-  password: <%= ENV["LIGHTMFB_REQUESTS_API_DATABASE_PASSWORD"] %>
+  username: xpensflo
+  password: <%= ENV["XPENSFLO_DATABASE_PASSWORD"] %>
