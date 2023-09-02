@@ -3,15 +3,22 @@ Rails.application.routes.draw do
   authenticate :user, ->(user) { user.admin? } do
     mount Sidekiq::Web => '/sidekiq'
   end
+  get '/reports/daily_reports', to: 'reports#daily_reports'
+  post '/reports/general_reports', to: 'reports#general_reports'
+  resources :reports do 
+    
+  end
+
+  
+  
   resources :requests do
-    get 'daily_report', on: :collection
-    get 'general_reports', on: :collection
+    post 'reject_request', on: :member
     member do
       get 'vet_request'
       get 'approve_request'
       get 'clear_request'
       post 'pay_request'
-      post 'finish_request'      
+      post 'finish_request'    
     end
 
   end

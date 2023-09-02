@@ -1,5 +1,4 @@
 class RequestsController < ApplicationController
-  before_action :set_request, only: [:show, :edit, :update, :destroy]
   before_action :authorize_auditor!, only: [:clear_request]
   before_action :authorize_operations!, only: [:vet_request, :pay_request]
   before_action :authorize_cashier_ft!, only: [:finish_request]
@@ -12,29 +11,12 @@ class RequestsController < ApplicationController
     service = RequestsService.new(@request, current_user)
     @requests =service.get_users(current_user)
   end
-
-  def daily_report
-    @request = Request.new
-    service = RequestsService.new(@request, current_user)
-    @requests =service.get_daily_report(current_user)
-    respond_to do |format|  
-      format.html { render :daily_report }
-    end
-  end
-
-  def general_reports
-    @request = Request.new
-    service = RequestsService.new(@request, current_user)
-    @requests = service.get_general_report(params[:start_date], params[:end_date])
-    puts "@requests: #{@requests.inspect}"
-    
-    respond_to do |format|  
-      format.html { render :general_reports }
-    end
-  end
+  
   
 
   def show
+    @request = Request.find(params[:id])
+    @rejection = Rejection.new
   end
 
   def new
@@ -43,13 +25,20 @@ class RequestsController < ApplicationController
   end
 
   def edit
+    @request = Request.find(params[:id])
     @accounts = Account.all
   end
 
   def create
     @request = Request.new(request_params)
     service = RequestsService.new(@request, current_user)
-
+  
+    if @request.payment_type == 'transfer'
+      @request.trf_account_name = params[:request][:trf_account_name]
+      @request.trf_account_no = params[:request][:trf_account_no]
+      @request.trf_bank_name = params[:request][:trf_bank_name]
+    end
+  
     if service.create_request
       NotificationService.create_notifications(@request)
       redirect_to request_url(service.request), notice: "Request was successfully created."
@@ -61,19 +50,45 @@ class RequestsController < ApplicationController
       end
     end
   end
+  
 
   def update
-    service = RequestsService.new(@request, current_user)
-    if service.update_request(request_params, current_user, params)
-      redirect_to request_url(service.request), notice: "Request was successfully updated."
+    @request = Request.find(params[:id])
+    if @request.update(request_params)
+      @request.update(status: 'pending') # Explicitly set the status to 'pending'
+      if @request.payment_type == 'transfer'
+        @request.trf_account_name = params[:request][:trf_account_name]
+        @request.trf_account_no = params[:request][:trf_account_no]
+        @request.trf_bank_name = params[:request][:trf_bank_name]
+        @request.save
+      end
+      redirect_to requests_url, notice: "Request was successfully updated."
+      NotificationService.create_notifications(@request)
     else
+      @accounts = Account.all
       render :edit, status: :unprocessable_entity
+    end
+  end
+  
+
+  def reject_request
+    @request = Request.find(params[:id])
+    @rejection = @request.rejections.build(reason: params[:reason], user: current_user)
+
+    if @rejection.save
+      @request.update(status: 'rejected')
+      NotificationService.create_notifications(@request)
+      redirect_to @request, notice: "Request was rejected successfully."
+    else
+     
+      render :show, notice: "Unable to reject request."
     end
   end
 
 
 
   def destroy
+    @request = Request.find(params[:id])
     @request.destroy
     redirect_to requests_url, notice: "Request was successfully destroyed."
   end
@@ -103,10 +118,6 @@ class RequestsController < ApplicationController
  
 
   private
-
-  def set_request
-    @request = Request.find(params[:id])
-  end
 
   def request_params
     params.require(:request).permit(:amount, :account_id, :comment, :narration, :payment_type, :expense_type)
@@ -185,7 +196,7 @@ class RequestsController < ApplicationController
 
   def authorize_user!
     @request = Request.find(params[:id])
-    redirect_to request_path(@request), notice: 'You cannot edit the request at this stage.' unless current_user == @request.requested_by and @request.status == "pending"
+    redirect_to request_path(@request), notice: 'You cannot edit the request at this stage.' unless current_user == @request.requested_by and (@request.status == "pending" || @request.status == "rejected")
   end
   def authenticate_admin!
     redirect_to root_path, alert: 'Access denied.' unless current_user.admin?

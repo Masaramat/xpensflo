@@ -47,6 +47,25 @@
 </div>
 <!-- End of Page Wrapper -->
 
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const paymentTypeSelect = document.getElementById('request_payment_type');
+    const transferDetails = document.getElementById('transfer-details');
+
+    // Initially hide transfer details
+    transferDetails.style.display = 'none';
+
+    // Add event listener to payment type select
+    paymentTypeSelect.addEventListener('change', function() {
+      if (paymentTypeSelect.value === 'transfer') {
+        transferDetails.style.display = 'flex';
+      } else {
+        transferDetails.style.display = 'none';
+      }
+    });
+  });
+</script>
+
 
 
   

@@ -1,0 +1,125 @@
+<!-- Page Wrapper -->
+<div id="wrapper">
+    <%= render "home/sidebar" %>
+    
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+
+        <!-- Main Content -->
+        <div id="content">
+
+            <%= render "home/topbar" %>
+
+            <!-- Begin Page Content -->
+            <div class="container-fluid">
+                <div class="card border-warning">
+                <!-- Page Heading -->
+                <div class="card-header bg-dark text-light d-sm-flex align-items-center justify-content-between">
+                    <h3>Cashier Daily transaction report</h3>
+                    
+                </div>
+
+                <div class="card-body">
+                      <% if notice %>
+                        <p style="color: green"><%= notice %></p>
+                      <% end %>
+                  <table class="table table-striped " id = "user_table">
+                  
+                    <thead class="bg-def text-light">
+                    <div id="example_wrapper" class="row">
+                          <div class="col-md-6">
+                              <div class="dataTables_filter">
+                                  <!-- Add the search input here -->
+                              </div>
+                              <div class="dataTables_buttons">
+                                  <!-- Buttons will be appended here -->
+                              </div>
+                          </div>
+                          <!-- Other content here -->
+                      </div>
+                      <tr>
+                        <th>Paid to</th>                        
+                        <th>Account GL</th>
+                        <th>Account name</th>
+                        <th>Trx code</th>
+                        <th>Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% 
+                      sum = 0
+                      @requests.each do |request| 
+                        sum = sum + request.amount
+                        %>
+                      <tr>
+                        <td><%= request.requested_by.name %></td>
+                        
+                        <td><%= request.account.gl %></td>
+                        <td><%= request.account.name %></td>
+                        <td><%= request.trx_code %></td>
+                        <td><%= number_to_currency(request.amount, unit: "", precision: 2, delimiter: ",") %></td>
+                        
+                      </tr>
+                      
+                      <% end %>
+                      <tr style="font-weight: bold; text-decoration: underline;" >
+                        <td>Total</td>
+                        
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td><%= number_to_currency(sum, unit: "", precision: 2, delimiter: ",")   %></td>
+                        
+                      </tr>
+                     
+                    </tbody>
+                    <tfoot>
+                      
+                    </tfoot>
+                  </table>                 
+                  
+                </div>
+              
+              </div>                    
+                    
+                   
+               
+
+            </div>
+            <!-- /.container-fluid -->
+
+        </div>
+        <!-- End of Main Content -->
+
+        <%= render "home/footer" %>
+
+    </div>
+    <!-- End of Content Wrapper -->
+
+</div>
+<!-- End of Page Wrapper -->
+
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+
+<script>
+  $(document).ready(function() {
+    var table = $('#user_table').DataTable( {
+        lengthChange: false,
+        buttons: [
+            { extend: 'excel', filename: 'cashier_daily_transaction_' + new Date().toLocaleDateString('en-US').replace(/\//g, '-'), text: 'Excel' },
+            { extend: 'pdf', filename: 'cashier_daily_transaction_' + new Date().toLocaleDateString('en-US').replace(/\//g, '-'), text: 'PDF' },
+            { extend: 'colvis', text: 'View Columns' }
+        ],
+        scrollY: '350px'
+    } );
+    table.buttons().container()
+        .appendTo( '.dataTables_buttons' );
+  } );
+</script>
+
+
+
+

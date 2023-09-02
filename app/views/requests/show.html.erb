@@ -51,6 +51,38 @@
 <!-- End of Page Wrapper -->
 
 
+<!-- Logout Modal-->
+<div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel">Ready to Leave?</h4>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <%= form_tag reject_request_request_path(@request), method: :post do %>
+                <div class="modal-body">
+                    <p>Please state the reason(s) for rejection</p>
+                    
+                        <div class="field form-group mb-2">
+                        <%= text_area_tag :reason, nil, class: "form-control" %>
+                        </div>
+                        
+                    
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <%= submit_tag "Reject Request", class: "btn btn-danger" %>
+
+                </div>
+            <% end %>
+        </div>
+    </div>
+</div>
+
+
 
 
 

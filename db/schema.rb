@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_26_110357) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_31_160257) do
   create_table "accounts", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "gl"
     t.string "name"
@@ -42,6 +42,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_26_110357) do
     t.index ["user_id"], name: "index_notifications_on_user_id"
   end
 
+  create_table "rejections", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "reason"
+    t.bigint "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "request_id", null: false
+    t.index ["request_id"], name: "index_rejections_on_request_id"
+    t.index ["user_id"], name: "index_rejections_on_user_id"
+  end
+
   create_table "requests", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.decimal "amount", precision: 10
     t.bigint "account_id"
@@ -62,6 +72,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_26_110357) do
     t.timestamp "cleared_at"
     t.timestamp "paid_at"
     t.string "trx_code"
+    t.string "trf_account_name"
+    t.bigint "trf_account_no"
+    t.string "trf_bank_name"
     t.index ["account_id"], name: "index_requests_on_account_id"
     t.index ["approved_by_id"], name: "index_requests_on_approved_by_id"
     t.index ["cleared_by_id"], name: "index_requests_on_cleared_by_id"
@@ -90,6 +103,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_26_110357) do
 
   add_foreign_key "notifications", "requests"
   add_foreign_key "notifications", "users"
+  add_foreign_key "rejections", "requests"
+  add_foreign_key "rejections", "users"
   add_foreign_key "requests", "accounts"
   add_foreign_key "requests", "users", column: "approved_by_id"
   add_foreign_key "requests", "users", column: "cleared_by_id"

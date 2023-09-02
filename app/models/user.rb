@@ -15,6 +15,8 @@ class User < ApplicationRecord
   has_many :paid_requests, class_name: 'Request', foreign_key: 'paid_by_id', dependent: :destroy
   has_many :notifications, dependent: :destroy
 
+  has_many :rejections, dependent: :destroy
+
   def self.find_by_authentication_token(token)
     find_by(authentication_token: token)
   end

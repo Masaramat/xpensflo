@@ -167,6 +167,31 @@
 
   <% end %>
 
+  <%  if request.rejections != nil %>
+ 
+    <% request.rejections.each do |rejection| %>
+      <div class="row">
+        <div class="col-lg-6">
+          <p>
+            <strong>Rejected by:</strong>
+            <span style="font-weight: 600;"><%= rejection.user.name %></span>
+            
+          </p>
+          
+        </div>
+        <div class="col-lg-6">
+          <p>
+              <strong>Rejection reason:</strong>
+              <span style="font-weight: 600;"><%= rejection.reason %></span>
+              
+            </p>
+        </div>
+
+      </div>
+    <% end %>
+
+  <% end %>
+
 
 
     <div class="row">
@@ -193,6 +218,9 @@
         <% when 'operation', 'head_admin' %>
           <%if @request.status == 'pending'%>
             <%= link_to 'Vet Request', vet_request_request_path(@request), class: "btn btn-dark" %>
+            <a class="btn btn-danger" href="#" data-toggle="modal" data-target="#rejectModal">                  
+               Reject Request
+            </a>
           <% else %>
             <%if current_user.role == 'operation' and @request.status == 'cleared'%>  
               <% if @request.payment_type == 'cash' %>
@@ -237,14 +265,21 @@
           
         <% when 'bm', 'md' %>
           <%= link_to 'Approve Request', approve_request_request_path(@request), class: "btn btn-dark" %>
-        <% when 'auditor' %>
+          <a class="btn btn-danger" href="#" data-toggle="modal" data-target="#rejectModal">                  
+              Reject Request
+          </a>
+          <% when 'auditor' %>
           <%= link_to 'Clear Request', clear_request_request_path(@request), class: "btn btn-dark" %>
-        <% else %>
+          <a class="btn btn-danger" href="#" data-toggle="modal" data-target="#rejectModal">                  
+              Reject Request
+          </a>
+          <% else %>
               <div class="row">
                 
-                <% if request.requested_by == current_user and request.status == "pending" %>
+              <% if request.requested_by == current_user && (request.status == "pending" || request.status == "rejected") %>
+             
                   <div class="col-md-2">
-                    <%= link_to "Edit request", edit_request_path, class: "btn btn-dark" %>
+                    <%= link_to "Edit request", edit_request_path, class: "btn btn-dark form-control" %>
                   
                   </div>
                   <div class="col-md-3">

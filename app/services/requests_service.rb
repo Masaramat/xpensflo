@@ -42,7 +42,7 @@ class RequestsService
                 )
     when 'md'
       target_branch = Branch.find_by(name: 'Head office')
-      p target_branch.id
+     
       if target_branch
         requests = Request.joins(:requested_by)  # Join requests with users table based on requested_by_id
                   .where(
@@ -66,7 +66,7 @@ class RequestsService
                 )
     when 'auditor'
       target_branch = Branch.find_by(name: 'Head office')
-      p target_branch.id
+     
       requests = Request.joins(:requested_by)  # Join requests with users table based on requested_by_id
                 .where(
                   Request.arel_table[:status].eq('approved').and(
@@ -106,29 +106,24 @@ class RequestsService
     return requests
   end
 
-  def get_general_report(start_date = nil, end_date = nil)
+  def get_general_report(start_date = nil, end_date = nil, status = "all")
     if start_date.nil? && end_date.nil?
       today = Date.today
       start_date = today.beginning_of_month
       end_date = today.end_of_month
     end
-  
-    requests = Request.where(
-      Request.arel_table[:paid_at].gteq(start_date)
-        .and(Request.arel_table[:paid_at].lteq(end_date))
-    )
+    if status == "all"
+      requests = Request.all
+    else
+      requests = Request.where(
+        Request.arel_table[:created_at].gteq(start_date)
+          .and(Request.arel_table[:created_at].lteq(end_date))
+          .and(Request.arel_table[:status].eq(status))
+      )
+    end
     
     
     return requests
   end
- 
-  
-  
-  
-  
-
-
-  
-  
 
 end

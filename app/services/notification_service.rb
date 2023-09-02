@@ -4,6 +4,14 @@ class NotificationService
     def self.create_notifications(request)
         notifications = []
         case request.status
+        when "rejected"
+          next_approver = request.requested_by
+          notifications.push(Notification.create(
+            user: request.requested_by,
+            request: request,
+            message: "Your request has been rejected" 
+          ))
+          
         when "paid"
           next_approver = request.paid_by
           notifications.push(Notification.create(

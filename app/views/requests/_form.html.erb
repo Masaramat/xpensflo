@@ -69,6 +69,26 @@
           
         </div>
 
+        <div class ="row" id="transfer-details">
+          <div class="field form-group mb-2 col-lg-4" >
+            <%= form.label :trf_account_name, style: "display: block" %>
+            <%= form.text_field :trf_account_name, class: "form-control" %>
+          </div>
+
+          <div class="field form-group mb-2 col-lg-4" >
+            <%= form.label :trf_account_no, style: "display: block" %>
+            <%= form.text_field :trf_account_no, class: "form-control" %>
+          </div>
+
+          <div class="field form-group mb-2 col-lg-4" >
+            <%= form.label :trf_bank_name, style: "display: block" %>
+            <%= form.text_field :trf_bank_name, class: "form-control" %>
+          </div>
+
+        </div>
+
+        
+
         <div>
           <%= form.submit class: "btn btn-dark" %>
          

@@ -61,10 +61,11 @@
             data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <% if current_user.role == "cashier" or current_user.role == "ft" %>
-                <%= link_to "Cashier daily report", daily_report_requests_path, class: "nav-item collapse-item" %>
+                <%= link_to "Cashier daily report", reports_daily_reports_path, class: "nav-item collapse-item" %>
 
                 <% end %>
-                <%= link_to "Generate Report", general_reports_requests_path(start_date: nil, end_date: nil), class: "nav-item collapse-item" %>
+                <%= link_to "General report", reports_path, class: "nav-item collapse-item" %>
+                
                
             </div>
         </div>
