@@ -100,9 +100,9 @@ class RequestsService
 
     when 'ft'
       requests = Request.joins(:requested_by).where(
-        status: 'cleared', 
+        status: 'cleared', expense_type: 'adashe',
         users: { branch_id: user.branch_id }
-      )or(
+      ).or(
         Request.where(
           paid_by_id: user.id, status: 'paid'
         )
