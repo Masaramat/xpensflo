@@ -132,7 +132,7 @@ class RequestsController < ApplicationController
     perform_request_action('paid', current_user, paid_by_id)
   end
 
-  def finish_request
+  def finish_request    
     trx_code = params[:request][:trx_code]
     perform_request_action('finished', current_user, trx_code)
   end
@@ -176,6 +176,8 @@ class RequestsController < ApplicationController
       update_request_status_for_cashier(user)
       @request.paid_at = Time.now()
       @request.trx_code = additional_param
+      @request.paid_by = current_user
+     
     end
 
     if @request.save

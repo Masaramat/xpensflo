@@ -52,10 +52,15 @@
                         sum = sum + request.amount
                         %>
                       <tr>
-                        <td><%= request.requested_by.name %></td>
-                        
-                        <td><%= request.account.gl %></td>
-                        <td><%= request.account.name %></td>
+                        <td><%= request.requested_by.name %></td> 
+                        <% if request.expense_type == 'adashe' %>                       
+                          <td><%= request.account_no %></td>
+                          <td><%= request.account_name %></td>
+                        <% else %>
+                          <td><%= request.account.gl %></td>
+                          <td><%= request.account.name %></td>
+
+                        <% end %>
                         <td><%= request.trx_code %></td>
                         <td><%= number_to_currency(request.amount, unit: "", precision: 2, delimiter: ",") %></td>
                         

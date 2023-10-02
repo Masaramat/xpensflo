@@ -72,7 +72,7 @@ class NotificationService
             ))
           end
         when "cleared"
-          if request.expense_type == adashe
+          if request.expense_type == 'adashe'
             next_approver = User.find_by(role: 'ft', branch_id: request.requested_by.branch_id)
           else
             if request.requested_by.branch.name.casecmp("Head office") == 0 
