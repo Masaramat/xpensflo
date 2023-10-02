@@ -10,17 +10,17 @@
 #   https://dev.mysql.com/doc/refman/5.7/en/password-hashing.html
 #
 default: &default
-  adapter: mysql2
-  encoding: utf8mb4
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  username: mangut
-  password: password
-  socket: /var/run/mysqld/mysqld.sock
-  time_zone: 'Africa/Nairobi'
+  adapter: mysql2 
+  
 
 development:
   <<: *default
   database: lightmfb_requests_dev
+  host: localhost
+  port: 3306
+  username: mangut
+  password: password
+
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -48,9 +48,22 @@ test:
 #
 # Read https://guides.rubyonrails.org/configuring.html#configuring-a-database
 # for a full overview on how database connection configuration can be specified.
-#
+
+
+# THIS IS A SIMULATION OF PRODUCTION ENVIRONMENT
+# production:
+#   <<: *default
+#   database: lightmfb_requests_dev
+#   host: localhost
+#   port: 3306
+#   username: mangut
+#   password: password
+
 production:
   <<: *default
-  database: lightmfb_requests_prod
-  username: xpensflo
-  password: <%= ENV["XPENSFLO_DATABASE_PASSWORD"] %>
+  host: <%= ENV['DATABASE_HOST'] %>
+  port: <%= ENV['DATABASE_PORT'] %>
+  username: <%= ENV['DATABASE_USERNAME'] %>
+  password: <%= ENV['DATABASE_PASSWORD'] %>
+  database: <%= ENV['DATABASE_NAME'] %>
+  

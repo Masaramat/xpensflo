@@ -7,7 +7,61 @@ class ReportsController < ApplicationController
   
     def daily_reports
       @requests = initial_daily_report
-      render :index # Render the same view as index
+      render :daily_report # Render the same view as index
+    end
+
+    def daily_disbusements_report
+      today = Date.today
+      start_of_today = today.beginning_of_day
+      end_of_today = today.end_of_day
+    
+      @debit_credits = DebitCredit.where(
+        DebitCredit.arel_table[:created_at].gteq(start_of_today)
+          .and(DebitCredit.arel_table[:trx_type].eq("loan_disbursement"))
+          .and(DebitCredit.arel_table[:created_at].lteq(end_of_today))
+      )     
+
+    end
+
+    def daily_transfers_report
+      today = Date.today
+      start_of_today = today.beginning_of_day
+      end_of_today = today.end_of_day
+    
+      @debit_credits = DebitCredit.where(
+        DebitCredit.arel_table[:created_at].gteq(start_of_today)
+          .and(DebitCredit.arel_table[:trx_type].eq("transfer"))
+          .and(DebitCredit.arel_table[:created_at].lteq(end_of_today))
+      )
+
+      @requests = Request.where(
+        Request.arel_table[:paid_at].gteq(start_of_today)
+          .and(Request.arel_table[:paid_by_id].eq(current_user.id))
+          .and(Request.arel_table[:paid_at].lteq(end_of_today))
+      )
+    end
+
+    def ft_daily_transfers_report
+      today = Date.today
+      start_of_today = today.beginning_of_day
+      end_of_today = today.end_of_day
+    
+      @debit_credits = DebitCredit.where(
+        DebitCredit.arel_table[:created_at].gteq(start_of_today)
+          .and(DebitCredit.arel_table[:paid_by_id].eq(current_user.id))
+          .and(DebitCredit.arel_table[:trx_type].eq("transfer"))
+          .and(DebitCredit.arel_table[:created_at].lteq(end_of_today))
+      )
+    end
+
+    def all_disbursements_report 
+      @debit_credits = DebitCredit.where(trx_type: "loan_disbursement")
+
+    end
+
+    def all_transfers_report 
+      @debit_credits = DebitCredit.where(trx_type: "transfer")
+
     end
   
     def general_reports

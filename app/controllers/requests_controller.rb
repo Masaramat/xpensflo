@@ -30,6 +30,7 @@ class RequestsController < ApplicationController
   end
 
   def create
+
     @request = Request.new(request_params)
     service = RequestsService.new(@request, current_user)
   
@@ -37,6 +38,26 @@ class RequestsController < ApplicationController
       @request.trf_account_name = params[:request][:trf_account_name]
       @request.trf_account_no = params[:request][:trf_account_no]
       @request.trf_bank_name = params[:request][:trf_bank_name]
+    end
+
+    if @request.expense_type == "operations" || @request.expense_type == 'admin'
+      @request.account_no = 1
+      @request.account_name = nil
+      if @request.account.blank?
+        @accounts = Account.all
+        redirect_to requests_url, notice: "Faild: Account is required for operations or admin expenses."
+        return
+      end
+    elsif @request.expense_type == 'adashe'
+      @request.account = Account.new
+      if @request.account_name.blank? || @request.account_no.blank?       
+        
+        redirect_to requests_url, notice: "Faild: Account name and account number are required for adashe withdrawals."
+        return
+      elsif current_user.role != 'marketer'
+        redirect_to requests_url, notice: "Faild: Only marketers can perform adashe withdrawals."
+        return
+      end
     end
   
     if service.create_request
@@ -47,6 +68,7 @@ class RequestsController < ApplicationController
       respond_to do |format|  
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @request.errors, status: :unprocessable_entity }
+        p @request.errors
       end
     end
   end
@@ -90,7 +112,7 @@ class RequestsController < ApplicationController
   def destroy
     @request = Request.find(params[:id])
     @request.destroy
-    redirect_to requests_url, notice: "Request was successfully destroyed."
+    redirect_to requests_url, notice: "Request was successfully deleted."
   end
 
   def vet_request
@@ -120,7 +142,19 @@ class RequestsController < ApplicationController
   private
 
   def request_params
-    params.require(:request).permit(:amount, :account_id, :comment, :narration, :payment_type, :expense_type)
+    params.require(:request).permit(
+      :amount, 
+      :account_id, 
+      :comment, 
+      :narration, 
+      :payment_type, 
+      :expense_type, 
+      :account_name, 
+      :account_no, 
+      :trf_account_name,
+      :trf_account_no,
+      :trf_bank_name
+    )
   end
 
   def perform_request_action(status, user, additional_param)
@@ -131,8 +165,7 @@ class RequestsController < ApplicationController
       update_request_status_for_operations(user)
       @request.vetted_at = Time.now()
     when 'approved'
-      update_request_status_for_bm_md(user)
-      @request.approved_at = Time.now()
+      update_request_status_for_bm_md(user)      
     when 'cleared'
       update_request_status_for_auditor(user)
       @request.cleared_at = Time.now()
@@ -168,12 +201,26 @@ class RequestsController < ApplicationController
   end
 
   def update_request_status_for_bm_md(user)
-    @request.status = 'approved'
-    @request.approved_by = user
+    if @request.status == 'waiting'
+      @request.status = 'cleared'
+      @request.br_cleared_by = user
+      @request.br_cleared_at = Time.now()
+    else
+      @request.status = 'approved'
+      @request.approved_by = user
+      @request.approved_at = Time.now()
+    end
+
+    
+    
   end
 
   def update_request_status_for_auditor(user)
-    @request.status = 'cleared'
+    if @request.approved_by.role == "md"
+      @request.status = 'waiting'
+    else
+      @request.status = 'cleared'
+    end
     @request.cleared_by = user
   end
 
@@ -182,13 +229,13 @@ class RequestsController < ApplicationController
   end
 
   def authorize_operations!
-    redirect_to root_path, notice: 'Only operations can perform this task.' unless current_user.operation?
+    redirect_to root_path, notice: 'Only operations can perform this task.' unless current_user.operation? or current_user.supervisor?
   end
   def authorize_md_bm!
-    redirect_to root_path, notice: 'Only MD or BM can perform this task.' unless current_user.md? or current_user.bm?
+    redirect_to root_path, notice: 'Only MD or BM or Supervisor can perform this task.' unless current_user.md? or current_user.bm? or current_user.supervisor?
   end
   def authorize_auditor!
-    redirect_to root_path, notice: 'Only operations can perform this task.' unless current_user.auditor?
+    redirect_to root_path, notice: 'Only Audirors can perform this task.' unless current_user.auditor?
   end
   def authorize_cashier_ft!
     redirect_to root_path, notice: 'Only Cashier of FT can perform this task.' unless current_user.ft? or current_user.cashier?

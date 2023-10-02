@@ -46,13 +46,26 @@
       </p>
       
     </div>
-    <div class="col-lg-6">
-        <p>
-        <strong>Account:</strong>
-        <%= "#{request.account.gl}- #{request.account.name}" %>
-        <span style="font-weight: 600;"><%= request.expense_type %></span>
-      </p>
-    </div>
+    <% if request.expense_type == 'adashe' %>
+      <div class="col-lg-6">
+          <p>
+          <strong>Account:</strong>
+          <%= "#{request.account_no}- #{request.account_name}" %>
+          
+        </p>
+      </div>
+
+    <% else %>
+      <div class="col-lg-6">
+          <p>
+          <strong>Account:</strong>
+          <%= "#{request.account.gl}- #{request.account.name}" %>
+          <span style="font-weight: 600;"><%= request.expense_type %></span>
+        </p>
+      </div>
+
+    <% end %>
+    
 
   </div>
   
@@ -250,49 +263,82 @@
 
           <% end %>  
 
-          <% when 'cashier', 'ft' %>          
-           
-            <%= form_with(model: @request, url: finish_request_request_path(@request), method: :post) do |form| %>
-              <div class="field form-group col-lg-6 mb-2">
-                <%= form.label :trx_code %>
-                <%= form.text_field :trx_code,  class: "form-control" %>
+          <% when 'cashier' %> 
+            <% if @request.status == 'paid' && @request.paid_by == current_user %>           
+              <%= form_with(model: @request, url: finish_request_request_path(@request), method: :post) do |form| %>
+                <div class="field form-group col-lg-6 mb-2">
+                  <%= form.label :trx_code %>
+                  <%= form.text_field :trx_code,  class: "form-control" %>
 
-              </div>
-              <%= form.submit 'Finish Request', class: "btn btn-dark" %>
-              <%= link_to "Back to requests", requests_path, class: "btn btn-danger" %>
+                </div>
+                <%= form.submit 'Finish Request', class: "btn btn-dark" %>
+                <%= link_to "Back to requests", requests_path, class: "btn btn-danger" %>
+              <% end %>
+            <% end %>
+
+          <% when 'ft' %> 
+            <% if (@request.status == 'paid' && @request.paid_by == current_user) || (@request.expense_type == 'adashe' && @request.status == 'cleared') %>           
+              <%= form_with(model: @request, url: finish_request_request_path(@request), method: :post) do |form| %>
+                <div class="field form-group col-lg-6 mb-2">
+                  <%= form.label :trx_code %>
+                  <%= form.text_field :trx_code,  class: "form-control" %>
+
+                </div>
+                <%= form.submit 'Finish Request', class: "btn btn-dark" %>
+                <%= link_to "Back to requests", requests_path, class: "btn btn-danger" %>
+              <% end %>
             <% end %>
              
           
-        <% when 'bm', 'md' %>
-          <%= link_to 'Approve Request', approve_request_request_path(@request), class: "btn btn-dark" %>
-          <a class="btn btn-danger" href="#" data-toggle="modal" data-target="#rejectModal">                  
-              Reject Request
-          </a>
+          <% when 'bm' %>
+            <% if @request.status == 'vetted' || @request.status == 'waiting' || (@request.status == 'pending' && @request.requested_by.role == 'supervisor') %>
+              <%= link_to 'Approve Request', approve_request_request_path(@request), class: "btn btn-dark" %>
+              <a class="btn btn-danger" href="#" data-toggle="modal" data-target="#rejectModal">                  
+                  Reject Request
+              </a>
+           
+            <% end %>
+          <% when 'md' %>
+            <% if @request.status == 'vetted' || @request.status == 'waiting' %>
+              <%= link_to 'Approve Request', approve_request_request_path(@request), class: "btn btn-dark" %>
+              <a class="btn btn-danger" href="#" data-toggle="modal" data-target="#rejectModal">                  
+                  Reject Request
+              </a>
+            <% end %>
+          <% when 'supervisor' %>
+            <% if @request.status == 'pending' && @request.requested_by.role == 'marketer' %>
+              <% if @request.expense_type == 'adashe' %>
+                <%= link_to 'Approve Request', approve_request_request_path(@request), class: "btn btn-dark" %> 
+              <% else %>
+                <%= link_to 'Vet Request', vet_request_request_path(@request), class: "btn btn-dark" %>
+              <% end %>
+              <a class="btn btn-danger" href="#" data-toggle="modal" data-target="#rejectModal">                  
+                  Reject Request
+              </a>
+            <% end %>
           <% when 'auditor' %>
-          <%= link_to 'Clear Request', clear_request_request_path(@request), class: "btn btn-dark" %>
-          <a class="btn btn-danger" href="#" data-toggle="modal" data-target="#rejectModal">                  
-              Reject Request
-          </a>
-          <% else %>
-              <div class="row">
-                
-              <% if request.requested_by == current_user && (request.status == "pending" || request.status == "rejected") %>
-             
-                  <div class="col-md-2">
-                    <%= link_to "Edit request", edit_request_path, class: "btn btn-dark form-control" %>
-                  
-                  </div>
-                  <div class="col-md-3">
-                    <%= button_to "Delete this request", request_path(@request), method: :delete, class:"btn btn-danger" %> 
-                  </div> 
-                <% end %>
-                
-              
-              </div>
-         
-            
+            <% if @request.status == 'approved' %>
+              <%= link_to 'Clear Request', clear_request_request_path(@request), class: "btn btn-dark" %>
+              <a class="btn btn-danger" href="#" data-toggle="modal" data-target="#rejectModal">                  
+                  Reject Request
+              </a>
+            <% end %>
+          <% else %> 
         <% end %> 
-
+       
+                
+      <% if request.requested_by == current_user && (request.status == "pending" || request.status == "rejected") %>
+      
+          
+            <%= link_to "Edit request", edit_request_path, class: "btn btn-primary" %>         
+         
+          
+            <%= button_to "Delete this request", request_path(@request), method: :delete, class:"btn btn-danger mt-3" %> 
         
+        <% end %>
+
+        <div class="d-flex justify-content-end">
+          <%= link_to '<<<Go Back', :back, class: 'btn btn-primary' %>
+        </div>
 
 </div>

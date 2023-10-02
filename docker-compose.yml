@@ -1,0 +1,9 @@
+version: '3'
+services:
+  xpensflo:
+    image: xpensflo:v1.0
+    environment:
+      - DATABASE_URL=mysql://mangut:password@localhost:3306/lightmfb_requests_dev
+      - SECRET_KEY_BASE=fcabe11ebb8e085a0daa861d5c8c4de5c076174222628a010a225faabac08dac9ea8c570f7eaee7b42fe5d3eded450153873188cc3a8e2266741177d91612bee
+    ports:
+      - "8081:3000"

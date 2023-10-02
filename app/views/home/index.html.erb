@@ -58,7 +58,12 @@
                       <tr>
                         <td><%= sn += 1 %></td>
                         <td><%= request.amount %></td>
-                        <td><%= request.account.gl %></td>                        
+                        <% if request.expense_type == 'adashe' %>
+                          <td><%= request.account_no %></td>
+                        <% else %>
+                          <td><%= request.account.gl %></td>
+                        <% end %>
+                                                
                         <td><%= request.status %></td>
                         <td><%= request.paid_by.present? ? request.paid_by.name : "Pending Payment" %>
                         </td>

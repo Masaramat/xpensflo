@@ -1,0 +1,76 @@
+<%= form_with(model: @debit_credit) do |form| %>
+  <% if @debit_credit.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(@debit_credit.errors.count, "error") %> prohibited this debit_credit from being saved:</h2>
+
+      <ul>
+        <% @debit_credit.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <div class="row">
+    <div class="form-group col-md-4">
+      <%= form.label :amount %>
+      <%= form.text_field :amount, class: "form-control" %>
+    </div>
+
+    <div class="form-group col-md-8">
+      <%= form.label :amount_in_words %>
+      <%= form.text_area :amount_in_words, class: "form-control" %>
+    </div>
+
+  </div>
+  <div class="row">
+    <div class="form-group col-lg-4">
+      <%= form.label "Debit Account Number" %>
+      <%= form.number_field :dr_account, class: "form-control" %>
+    </div>
+
+    <div class="form-group col-lg-8">
+      <%= form.label "Debit Account Name" %>
+      <%= form.text_field :dr_account_name, class: "form-control" %>
+    </div>
+
+  </div>
+  <div class="row">
+    <div class="form-group col-lg-4">
+      <%= form.label "Credit Account Number" %>
+      <%= form.number_field :cr_account, class: "form-control" %>
+    </div>
+
+    <div class="form-group col-lg-8">
+      <%= form.label "Credit Account Name" %>
+      <%= form.text_field :cr_account_name, class: "form-control" %>
+    </div>
+
+  </div>
+
+   <div class="row">
+    <div class="form-group col-lg-6">
+      <%= form.label "Debit Naration" %>
+      <%= form.text_field :dr_narration, class: "form-control" %>
+    </div>
+
+    <div class="form-group col-lg-6">
+      <%= form.label "Credit Naration" %>
+      <%= form.text_field :cr_narration, class: "form-control" %>
+    </div>
+
+  </div>
+
+  <div class="form-group">
+    <%= form.label "Transaction Type" %>
+    <%= form.select :trx_type,
+      DebitCredit.trx_types.keys.map { |trx_type| [trx_type.capitalize, trx_type] },
+      {}, 
+      class: "form-control form-select" %>
+                   
+    
+  </div>
+
+  <div>
+    <%= form.submit class: "btn btn-dark" %>
+  </div>
+<% end %>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_31_160257) do
+ActiveRecord::Schema[7.0].define(version: 2023_10_01_125613) do
   create_table "accounts", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "gl"
     t.string "name"
@@ -23,6 +23,32 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_31_160257) do
     t.string "location"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "debit_credits", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.decimal "amount", precision: 10
+    t.string "amount_in_words"
+    t.bigint "dr_account"
+    t.bigint "cr_account"
+    t.string "dr_account_name"
+    t.string "cr_account_name"
+    t.integer "trx_type"
+    t.string "dr_narration"
+    t.string "cr_narration"
+    t.bigint "initiated_by_id"
+    t.timestamp "initiated_at"
+    t.bigint "approved_by_id"
+    t.timestamp "approved_at"
+    t.integer "status", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.timestamp "paid_at"
+    t.string "cr_trx_code"
+    t.string "dr_trx_code"
+    t.bigint "paid_by_id"
+    t.index ["approved_by_id"], name: "index_debit_credits_on_approved_by_id"
+    t.index ["initiated_by_id"], name: "index_debit_credits_on_initiated_by_id"
+    t.index ["paid_by_id"], name: "index_debit_credits_on_paid_by_id"
   end
 
   create_table "departments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -75,8 +101,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_31_160257) do
     t.string "trf_account_name"
     t.bigint "trf_account_no"
     t.string "trf_bank_name"
+    t.bigint "br_cleared_by_id"
+    t.timestamp "br_cleared_at"
+    t.string "account_name"
+    t.bigint "account_no"
     t.index ["account_id"], name: "index_requests_on_account_id"
     t.index ["approved_by_id"], name: "index_requests_on_approved_by_id"
+    t.index ["br_cleared_by_id"], name: "index_requests_on_br_cleared_by_id"
     t.index ["cleared_by_id"], name: "index_requests_on_cleared_by_id"
     t.index ["paid_by_id"], name: "index_requests_on_paid_by_id"
     t.index ["requested_by_id"], name: "index_requests_on_requested_by_id"
@@ -101,12 +132,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_31_160257) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "debit_credits", "users", column: "approved_by_id"
+  add_foreign_key "debit_credits", "users", column: "initiated_by_id"
+  add_foreign_key "debit_credits", "users", column: "paid_by_id"
   add_foreign_key "notifications", "requests"
   add_foreign_key "notifications", "users"
   add_foreign_key "rejections", "requests"
   add_foreign_key "rejections", "users"
   add_foreign_key "requests", "accounts"
   add_foreign_key "requests", "users", column: "approved_by_id"
+  add_foreign_key "requests", "users", column: "br_cleared_by_id"
   add_foreign_key "requests", "users", column: "cleared_by_id"
   add_foreign_key "requests", "users", column: "paid_by_id"
   add_foreign_key "requests", "users", column: "requested_by_id"

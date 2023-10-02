@@ -125,6 +125,8 @@ Devise.setup do |config|
   # a value of 20 is already extremely slow: approx. 60 seconds for 1 calculation).
   config.stretches = Rails.env.test? ? 1 : 12
 
+ 
+
   # Set up a pepper to generate the hashed password.
   # config.pepper = '9d8d59a10708c39fa4b74379e5f3713bcec9f4f4b00e3eb065af2b58021e669efc2f96c4c7efc4cdc1d0a640a76b478efdbb91d6b2c247f6f4e42002891f1892'
 
@@ -188,7 +190,7 @@ Devise.setup do |config|
   # ==> Configuration for :timeoutable
   # The time you want to timeout the user session without activity. After this
   # time the user will be asked for credentials again. Default is 30 minutes.
-  # config.timeout_in = 30.minutes
+  
 
   # ==> Configuration for :lockable
   # Defines which strategy will be used to lock an account.

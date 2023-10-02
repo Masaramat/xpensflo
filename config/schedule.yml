@@ -1,0 +1,3 @@
+my_backup:
+  cron: '0 3 * * *' # Schedule the backup to run daily at 3:00 AM (adjust as needed)
+  class: BackupWorker

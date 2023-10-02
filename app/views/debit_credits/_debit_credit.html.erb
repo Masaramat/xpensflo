@@ -1,0 +1,213 @@
+<div id="<%= dom_id debit_credit %>" class="container">
+  
+  <div class="row">
+    <div class="col-lg-6">
+      <p>
+        <strong>Amount:</strong>
+        <span style="font-weight: 600;"><%= debit_credit.amount %></span> 
+      </p>
+      
+    </div>
+    <div class="col-lg-6">
+        <p>
+        <strong>Payment by:</strong>
+        <span style="font-weight: 600;"><%= debit_credit.amount_in_words %></span> 
+        
+      </p>
+    </div>
+
+  </div>
+
+  <div class="row">
+    <div class="col-lg-6">
+      <p>
+        <strong>Branch:</strong>
+        <span style="font-weight: 600;"><%= Branch.find(debit_credit.initiated_by.branch_id).name  %></span> 
+        
+      </p>
+      
+    </div>
+    <div class="col-lg-6">
+        <p>
+          <strong>Request status:</strong>
+          <span style="font-weight: 600;"><%= debit_credit.status %></span> 
+          
+        </p>
+    </div>
+
+  </div>
+
+  <div class="row">
+    <div class="col-lg-6">
+        <p>
+        <strong>Debit Account:</strong>
+        <%= "#{debit_credit.dr_account}- #{debit_credit.dr_account_name}" %>
+      
+      </p>
+    </div>
+   
+    <div class="col-lg-6">
+        <p>
+        <strong>Credit Account:</strong>
+        <%= "#{debit_credit.cr_account}- #{debit_credit.cr_account_name}" %>
+      </p>
+    </div>
+
+  </div>
+  
+<div class="row">
+    <div class="col-lg-6">
+        <p>
+            <strong>Transaction type:</strong>
+            <span style="font-weight: 600;"><%= debit_credit.trx_type %></span>
+            
+        </p>
+    
+    </div>     
+
+</div>
+<%  if debit_credit.initiated_by != nil %>
+  <div class="row">
+    <div class="col-lg-6">
+      <p>
+        <strong>Initiated by:</strong>
+        <span style="font-weight: 600;"><%= debit_credit.initiated_by.name %></span>
+        
+      </p>
+      
+    </div>
+    <div class="col-lg-6">
+        <p>
+          <strong>Request Date:</strong>
+          <span style="font-weight: 600;"><%= debit_credit.created_at.strftime('%d-%m-%Y') %></span>
+          
+        </p>
+    </div>
+
+  </div>
+  <% end %>
+
+ 
+
+  <%  if debit_credit.approved_by != nil %>
+    <div class="row">
+      <div class="col-lg-6">
+        <p>
+          <strong>Approved by:</strong>
+          <span style="font-weight: 600;"><%= debit_credit.approved_by.name %></span>
+          
+        </p>
+        
+      </div>
+      <div class="col-lg-6">
+        <p>
+            <strong>Approval date:</strong>
+            <span style="font-weight: 600;"><%= debit_credit.approved_at.strftime('%d-%m-%Y') %></span>
+            
+          </p>
+      </div>
+
+    </div>
+
+  <% end %> 
+   <%  if debit_credit.paid_by != nil %>
+    <div class="row">
+      <div class="col-lg-6">
+        <p>
+          <strong>Paid by:</strong>
+          <span style="font-weight: 600;"><%= debit_credit.paid_by.name %></span>
+          
+        </p>
+        
+      </div>
+      <div class="col-lg-6">
+        <p>
+            <strong>Payment date:</strong>
+            <span style="font-weight: 600;"><%= debit_credit.paid_at.strftime('%d-%m-%Y') %></span>
+            
+          </p>
+      </div>
+
+    </div>
+    <div class="row">
+      <div class="col-lg-6">
+        <p>
+          <strong>Debit Naration:</strong>
+          <span style="font-weight: 600;"><%= debit_credit.dr_narration %></span>
+          
+        </p>
+        
+      </div>
+      <div class="col-lg-6">
+        <p>
+            <strong>Credit Naration:</strong>
+            <span style="font-weight: 600;"><%= debit_credit.cr_narration %></span>
+            
+          </p>
+      </div>
+
+    </div>
+
+  <% end %>
+
+  
+  
+    <div class="row">
+      <% if current_user == debit_credit.initiated_by && debit_credit.status == 'pending' %>
+        <div class="col-lg-3">
+            <%= link_to "Edit this debit credit", edit_debit_credit_path(debit_credit), class: "btn btn-dark form-control" %>
+        </div>
+        <div class="col-lg-3">
+            <%= button_to "Destroy this debit credit", debit_credit, method: :delete, class: "btn btn-danger form-control" %>
+        </div>
+      <% end %>
+      <%if (current_user.role == 'operation' || current_user.role == "supervisor") and debit_credit.status == 'pending'%>  
+        <div class="col-lg-3">
+            <%= link_to "Approve", approve_debit_credit_path(debit_credit), class: "btn btn-dark form-control" %>
+        </div>
+      <% elsif current_user.role == 'ft' and debit_credit.status == 'approved' and debit_credit.trx_type == 'transfer' %>
+        <%= form_with(model: debit_credit, url: pay_debit_credit_debit_credit_path(debit_credit), method: :post) do |form| %>
+          <% if @debit_credit.errors.any? %>
+            <div id="error_explanation">
+              <h2><%= pluralize(@debit_credit.errors.count, "error") %> prohibited this debit credit from being paid:</h2>
+              <ul>
+                <% @debit_credit.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+          <div class="row">
+            <div class="field form-group col-md-6">
+              <%= form.label :cr_trx_code %>
+              <%= form.text_field :cr_trx_code, class: "form-control" %>
+            </div>
+
+            <div class="field form-group col-md-6">
+              <%= form.label :dr_trx_code %>
+              <%= form.text_field :dr_trx_code, class: "form-control" %>
+            </div>
+
+          </div>
+
+          
+
+          <div class="actions">
+            <%= form.submit "Pay Debit Credit", class: "btn btn-dark" %>
+          </div>
+        <% end %>
+      <% end %>
+        
+
+        
+        </div>
+    
+
+   
+       
+
+ 
+</div> 
+
+
+

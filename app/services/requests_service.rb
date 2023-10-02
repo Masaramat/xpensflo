@@ -20,67 +20,94 @@ class RequestsService
     case user.role
     when 'operation'
       requests = Request.joins(:requested_by)
+        .where(
+          status: 'pending',
+          users: { branch_id: user.branch_id },
+          expense_type: 'operations'
+        )
+        .or(
+          Request.joins(:requested_by)
             .where(
-                Request.arel_table[:status].eq('pending').and(
-                  User.arel_table[:branch_id].eq(user.branch_id).and(
-                    Request.arel_table[:expense_type].eq('operations')
-                  )
-                ).or(
-                  Request.arel_table[:status].eq('cleared')  # Include cleared requests
-                )
+              status: 'cleared',
+              users: { branch_id: user.branch_id }
             )
+        )
     when 'head_admin'
-      requests = Request.joins(:requested_by)  # Join requests with users table based on requested_by_id
-                .where(
-                  Request.arel_table[:status].eq('pending').or(
-                    Request.arel_table[:status].eq('cleared')
-                  ).and(
-                    User.arel_table[:branch_id].eq(user.branch_id)  # Compare branch_id from users table with user's branch_id
-                  ).and(
-                    Request.arel_table[:expense_type].eq('admin')
-                  )
-                )
+       # Join requests with users table based on requested_by_ids
+      requests = Request.joins(:requested_by) 
+        .where(
+          Request.arel_table[:status].eq('pending').and(
+            # Compare branch_id from users table with user's branch_id
+            User.arel_table[:branch_id].eq(user.branch_id)  
+          ).and(
+            Request.arel_table[:expense_type].eq('admin')
+          )
+        )
     when 'md'
-      target_branch = Branch.find_by(name: 'Head office')
-     
-      if target_branch
-        requests = Request.joins(:requested_by)  # Join requests with users table based on requested_by_id
-                  .where(
-                    Request.arel_table[:status].eq('vetted').and(
-                      Request.arel_table[:amount].gt(49900)
-                    ).or(
-                      User.arel_table[:branch_id].eq(target_branch.id)  # Compare branch_id from users table with user's branch_id
-                    ).and(
-                      Request.arel_table[:status].eq('pending')
-                    )
-                  )
-      end
+      target_branch = Branch.find_by(name: 'Head office')   
+      
+      requests = Request.joins(:requested_by)  # Join requests with users table based on requested_by_id
+        .where(
+          Request.arel_table[:status].eq('vetted').and(
+            Request.arel_table[:amount].gt(49900)
+          ).or(
+            User.arel_table[:branch_id].eq(target_branch.id)  # Compare branch_id from users table with user's branch_id
+          ).and(
+            Request.arel_table[:status].eq('pending')
+          )
+        )
+      
     when 'bm'
-      requests = Request.joins(:requested_by)  # Join requests with users table based on requested_by_id
-                .where(
-                  Request.arel_table[:status].eq('vetted').and(
-                    User.arel_table[:branch_id].eq(user.branch_id)  # Compare branch_id from users table with user's branch_id
-                  ).and(
-                    Request.arel_table[:amount].lt(50000)
-                  )
-                )
-    when 'auditor'
-      target_branch = Branch.find_by(name: 'Head office')
-     
-      requests = Request.joins(:requested_by)  # Join requests with users table based on requested_by_id
-                .where(
-                  Request.arel_table[:status].eq('approved').and(
-                    User.arel_table[:branch_id].eq(user.branch_id).or(
-                      User.arel_table[:branch_id].eq(target_branch.id)  # Compare branch_id from users table with user's branch_id
-                    )  # Compare branch_id from users table with user's branch_id
-                  )
-                )
-    when 'cashier', 'ft'    
-      requests = Request.where(
-                  Request.arel_table[:paid_by_id].eq(user.id).and(
-                    Request.arel_table[:status].eq('paid')
-                  )
+      if user.branch.name.downcase == 'head office branch'
+        target_branch = Branch.find_by("LOWER(name) = ?", 'head office')
+        requests = Request.joins(:requested_by)
+          .where(
+            status: ['waiting', 'vetted'],
+            users: { branch_id: [user.branch_id, target_branch.id] }
+          ).or(
+          Request.joins(:requested_by)
+            .where(
+              status: 'pending',
+              users: { role: 'supervisor', branch_id: user.branch_id }
+            )
+        )
+      else
+        requests = Request.joins(:requested_by)
+          .where(
+            status: 'vetted',
+            users: { branch_id: user.branch_id }
+          ).or(
+            Request.joins(:requested_by)
+              .where(
+                status: 'pending',
+                users: { role: 'supervisor', branch_id: user.branch_id }
               )
+          )          
+
+      end
+      
+    when 'auditor'     
+      requests = Request.where(status: "approved")
+    when 'supervisor'     
+      requests = Request.joins(:requested_by)
+          .where(            
+              status: 'pending',
+              users: { role: 'marketer', branch_id: user.branch_id }
+            )
+        
+    when 'cashier'    
+      requests = Request.where(paid_by_id: user.id, status: 'paid')
+
+    when 'ft'
+      requests = Request.joins(:requested_by).where(
+        status: 'cleared', 
+        users: { branch_id: user.branch_id }
+      )or(
+        Request.where(
+          paid_by_id: user.id, status: 'paid'
+        )
+      )
+
     when 'user', 'admin'
       requests = Request.where(
         Request.arel_table[:requested_by_id].eq(user.id)

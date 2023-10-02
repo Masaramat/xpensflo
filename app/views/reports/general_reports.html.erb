@@ -82,6 +82,7 @@
                         <th>Request date</th>
                         <th>Status</th>
                         <th>Amount</th>
+                        <th>Action</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -99,7 +100,7 @@
                         <td><%= request.created_at.strftime('%d-%m-%Y') %></td>
                         <td><%= request.status %></td>
                         <td><%= number_to_currency(request.amount, unit: "", precision: 2, delimiter: ",") %></td>
-                        
+                        <td><%= link_to "Show", request, class: "btn btn-sm btn-primary" %></td>
                       </tr>
                       
                       <% end %>

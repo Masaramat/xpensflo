@@ -74,6 +74,22 @@ Rails.application.configure do
   config.force_ssl = false
   config.public_file_server.enabled = true
 
+
+  # config/application.rb or config/environments/development.rb
+
+  config.cache_store = :redis_cache_store, {
+    host: '192.168.1.55', # Replace with your Redis server's IP address
+    port: 6379, # Default Redis port
+  }
+# THIS IS A SIMULATION PF PROD
+  # config.cache_store = :redis_cache_store, {
+  #   host: 'localhost', # Replace with your Redis server's IP address
+  #   port: 6379, # Default Redis port
+  # }
+  
+  config.active_record.cache_versioning = false
+
+
   # Don't log any deprecations.
   config.active_support.report_deprecations = false
 

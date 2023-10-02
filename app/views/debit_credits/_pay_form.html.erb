@@ -1,0 +1,26 @@
+<%= form_with(model: @debit_credit, url: pay_debit_credit_debit_credit_path(@debit_credit), method: :post) do |form| %>
+  <% if @debit_credit.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@debit_credit.errors.count, "error") %> prohibited this debit credit from being paid:</h2>
+      <ul>
+        <% @debit_credit.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :cr_trx_code %>
+    <%= form.text_field :cr_trx_code %>
+  </div>
+
+  <div class="field">
+    <%= form.label :dr_trx_code %>
+    <%= form.text_field :dr_trx_code %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit "Pay Debit Credit" %>
+  </div>
+<% end %>

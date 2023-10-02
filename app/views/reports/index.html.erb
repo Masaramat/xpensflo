@@ -83,6 +83,7 @@
                         <th>Request date</th>
                         <th>Status</th>
                         <th>Amount</th>
+                        <th>Action</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -93,14 +94,19 @@
                         %>
                       <tr>
                         <td><%= request.requested_by.name %></td>
-                        
-                        <td><%= request.account.gl %></td>
-                        <td><%= request.account.name %></td>
+                        <% if request.expense_type == 'adashe' %>
+                          <td><%= request.account_no %></td>
+                          <td><%= request.account_name %></td>
+                        <% else %>
+                          <td><%= request.account.gl %></td>
+                          <td><%= request.account.name %></td>
+                        <% end %>
+                       
                         <td><%= request.trx_code %></td>
                         <td><%= request.created_at.strftime('%d-%m-%Y') %></td>
                         <td><%= request.status %></td>
                         <td><%= number_to_currency(request.amount, unit: "", precision: 2, delimiter: ",") %></td>
-                        
+                        <td><%= link_to "Show", request, class: "btn btn-sm btn-primary" %></td>
                       </tr>
                       
                       <% end %>
@@ -114,7 +120,7 @@
                             <td> </td>
                             <td> </td>
                             <td><%= number_to_currency(sum, unit: "", precision: 2, delimiter: ",") %></td>
-                            
+                            <td> </td>
                             
                         </tr>
 

@@ -1,0 +1,143 @@
+<!-- Page Wrapper -->
+<div id="wrapper">
+    <%= render "home/sidebar" %>
+    
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+
+        <!-- Main Content -->
+        <div id="content">
+
+            <%= render "home/topbar" %>
+
+            <!-- Begin Page Content -->
+            <div class="container-fluid">
+                <div class="card border-warning">
+                <!-- Page Heading -->
+                <div class="card-header bg-dark text-light d-sm-flex align-items-center justify-content-between">
+                    <h3>General Debit/Credit Report</h3>
+                    
+                </div>
+
+                <div class="card-body">
+                      <% if notice %>
+                        <p style="color: green"><%= notice %></p>
+                      <% end %>
+                  <table class="table table-striped " id = "user_table">
+                  
+                    <thead class="bg-def text-light">
+                    <div id="example_wrapper" class="row">
+                          <div class="col-md-6">
+                              <div class="dataTables_filter">
+                                  <!-- Add the search input here -->
+                              </div>
+                              <div class="dataTables_buttons">
+                                  <!-- Buttons will be appended here -->
+                              </div>
+                          </div>
+                          <!-- Other content here -->
+                      </div>
+                      <tr>
+                        <th>SN</th>
+                        <th>Disbursed By</th>
+                        <th>Debit Account</th>
+                        <th>Credit Account</th>
+                         
+                        <th>Amount</th>
+                        <th>Date</th>                       
+                        <th>Status</th>
+                        <th>Option</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% 
+                        sn = 0
+                        sum = 0
+                        @debit_credits.each do |debit_credit| 
+
+                        sum += debit_credit.amount
+                        
+                        %>
+                      <tr id="<%= dom_id debit_credit %>">
+                        <td><%= sn += 1 %></td>
+                        <td><%= debit_credit.initiated_by.name %></td> 
+                        <td><%= "#{debit_credit.dr_account} #{debit_credit.dr_account_name}" %></td>
+            
+                        <td><%= "#{debit_credit.cr_account} #{debit_credit.cr_account_name}" %></td>
+            
+                        <td><%= number_to_currency(debit_credit.amount, unit: "N", precision: 2, delimiter: ",") %></td>
+                        
+                        <td><%= debit_credit.created_at.strftime('%d-%m-%Y') %></td>                       
+            
+                        <td> <%= debit_credit.status %> </td>
+                        <td><%= link_to "Show", debit_credit, class: "btn btn-sm btn-primary" %></td>
+                      </tr>
+                      <% end %>
+                    </tbody>
+                    <tfoot >
+                      <tr class="text-bold">
+                        <td></td>
+                        <td>Total</td>
+                        <td></td>
+                        
+                         <td></td> 
+                        <td><%= number_to_currency(sum, unit: "N", precision: 2, delimiter: ",")  %></td>
+                        <td></td>                       
+                        <td></td>
+                        <td></td>
+                          
+
+                      </tr>
+                    </tfoot>
+                  </table>                 
+                  
+                </div>
+              
+              </div>                    
+                    
+                   
+               
+
+            </div>
+            <!-- /.container-fluid -->
+
+        </div>
+        <!-- End of Main Content -->
+
+        <%= render "home/footer" %>
+
+    </div>
+    <!-- End of Content Wrapper -->
+
+</div>
+<!-- End of Page Wrapper -->
+
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+
+<script>
+  $(document).ready(function() {
+  // Initialize DataTable with options
+  var table = $('#user_table').DataTable( {
+    lengthChange: false, // Disables the ability to change the number of records displayed per page
+    buttons: [
+      // Configuration for the "Excel" button
+      { extend: 'excel', filename: 'cashier_daily_transaction_' + new Date().toLocaleDateString('en-US').replace(/\//g, '-'), text: 'Excel' },
+      // Configuration for the "PDF" button
+      { extend: 'pdf', filename: 'cashier_daily_transaction_' + new Date().toLocaleDateString('en-US').replace(/\//g, '-'), text: 'PDF' },
+      // Configuration for the "View Columns" button (for column visibility)
+      { extend: 'colvis', text: 'View Columns' }
+    ],
+    scrollY: '350px' // Configures vertical scrolling with a height of 350 pixels
+  } );
+
+  // Move the DataTable buttons container to a specific element with class "dataTables_buttons"
+  table.buttons().container().appendTo('.dataTables_buttons');
+});
+
+</script>
+
+
+

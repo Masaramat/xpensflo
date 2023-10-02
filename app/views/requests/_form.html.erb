@@ -17,7 +17,7 @@
             <%= form.select :payment_type, 
                   Request.payment_types.keys.map { |payment_type| [payment_type.capitalize, payment_type] }, 
                   {},
-                  class: "form-control form-select"%>
+                  { id: 'request_payment_type', class: 'form-control form-select' }%>
                     <% if @request.errors.has_key?(:payment_type) %>
                     <div class="error-message">
                       <%= @request.errors[:payment_type].first %>
@@ -43,15 +43,44 @@
 
         
 
-        <div class="field form-group mb-2">
-          <%= form.label :account_id, style: "display: block"  %>
-          <%= form.select :account_id, accounts.each.map { |account| ["#{account.gl}-#{account.name}", account.id] }, {}, class: "form-control form-select" %><br>
-          <% if @request.errors.has_key?(:account_id) %>
-          <div class="error-message">
-            <%= @request.errors[:account_id].first %>
+        <!-- Tabs -->
+        <ul class="nav nav-tabs mt-3" id="myTabs" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link active text-success" id="expenseAccount-tab" data-toggle="tab" href="#expenseAccount" role="tab" aria-controls="expenseAccount" aria-selected="true">Expense Account</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="adasheAccount-tab" data-toggle="tab" href="#adasheAccount" role="tab" aria-controls="adasheAccount" aria-selected="false">Adashe Account</a>
+          </li>
+        </ul>
+
+        <!-- Tab content -->
+        <div class="tab-content" id="myTabContent">
+          <!-- Account GL Tab -->
+          <div class="tab-pane fade show active" id="expenseAccount" role="tabpanel" aria-labelledby="expenseAccount-tab">
+            <div class="field form-group mb-2">
+               <%= form.label :account_id, style: "display: block"  %>
+                <%= form.select :account_id, accounts.each.map { |account| ["#{account.gl}-#{account.name}", account.id] }, {}, class: "form-control form-select" %>
+              
+            </div>
           </div>
-        <% end %>
+
+          <!-- Account Name Tab -->
+          <div class="tab-pane fade" id="adasheAccount" role="tabpanel" aria-labelledby="adasheAccount-tab">
+           <div class="row">
+            <div class="field form-group mb-2 col-lg-6">
+              <%= form.label :account_name, style: "display: block"  %>
+              <%= form.text_field :account_name, class: "form-control" %>
+            </div>
+            <div class="field form-group mb-2 col-lg-6">
+              <%= form.label "Account Number", style: "display: block"  %>
+              <%= form.text_field :account_no, class: "form-control" %>
+            </div>
+
+           </div>
+            
           </div>
+        </div>
+
 
         <div class="field form-group mb-2">
           <%= form.label :narration, style: "display: block" %>

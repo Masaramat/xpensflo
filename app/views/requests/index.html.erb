@@ -81,9 +81,16 @@
                           <% when 'operation', 'head_admin' %>
                             <%= request.requested_by.name %>
                           <% when 'bm', 'md' %>
-                            <%= request.vetted_by.name %>
+                            <% if request.vetted_by.present? %>
+                              <%= request.vetted_by.name %>
+                            <% elsif request.cleared_by.present? %>
+                              <%= request.cleared_by.name %>
+                            <% end %>
                           <% when 'auditor' %>
+                            <% if request.approved_by.present? %>
                             <%= request.approved_by.name %>
+                            <% end %>
+                            
                                       
                           <% else %>
                             <%= request.paid_by&.name %>

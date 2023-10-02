@@ -36,7 +36,8 @@
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
             aria-expanded="true" aria-controls="collapseTwo">
-            <i class="fas fa-fw fa-cog"></i>
+            <i class="fas fa-fw fa-envelope"></i>
+
             <span>Requests</span>
         </a>
         
@@ -50,11 +51,29 @@
         
     </li>
 
+     <!-- Nav Item - Pages Collapse Menu -->
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsedr"
+            aria-expanded="true" aria-controls="collapseTwo">
+            <i class="fas fa-exchange-alt fa-fw"></i>
+            <span>Debit/Credit</span>
+        </a>
+        
+            <div id="collapsedr" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <%= link_to "My Debit/Credits", debit_credits_path, class: "nav-item collapse-item" %>               
+                    <%= link_to "New Debit/Credits", new_debit_credit_path, class: "nav-item collapse-item" %>
+                    <%= link_to "Pending Debit/Credits", debit_credits_pending_requests_path, class: "nav-item collapse-item" %>
+                </div>
+            </div>
+        
+    </li>
+
     <!-- Nav Item - Utilities Collapse Menu -->
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
             aria-expanded="true" aria-controls="collapseUtilities">
-            <i class="fas fa-fw fa-wrench"></i>
+            <i class="fas fa-file"></i>
             <span>Reports</span>
         </a>
         <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
@@ -64,8 +83,14 @@
                 <%= link_to "Cashier daily report", reports_daily_reports_path, class: "nav-item collapse-item" %>
 
                 <% end %>
-                <%= link_to "General report", reports_path, class: "nav-item collapse-item" %>
-                
+                <%= link_to "All Expense report", reports_path, class: "nav-item collapse-item" %>
+                <%= link_to "Today's D/C Disbursemets", reports_daily_disbusements_report_path, class: "nav-item collapse-item" %>
+                <%= link_to "All D/C Disbursemets", reports_all_disbursements_report_path, class: "nav-item collapse-item" %>
+                <%= link_to "Today's D/C Transfers", reports_daily_transfers_report_path, class: "nav-item collapse-item" %>
+                <%= link_to "All D/C Transfers", reports_all_transfers_report_path, class: "nav-item collapse-item" %>
+                <% if current_user.role == "ft" %>
+                    <%= link_to "FT Daily Transfers", reports_ft_daily_transfers_report_path, class: "nav-item collapse-item" %>
+                <% end %>
                
             </div>
         </div>
@@ -98,6 +123,9 @@
                 </div>
             </div>
         </li>
+        
+
+         
        
 
     <% end %>   
